@@ -38,7 +38,7 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
           <CloseIcon fontSize="small" />
         </IconButton>
       </DialogTitle>
-      <DialogContent sx={{ pt: 1 }}>
+      <DialogContent sx={{ pt: 1, overflowY: 'visible' }}>
         {children}
       </DialogContent>
     </Dialog>

@@ -12,7 +12,7 @@ export function useLabels(userId: string | undefined) {
     if (!userId) return
     const { data, error } = await supabase
       .from('labels')
-      .select('*')
+      .select('id, name, color')
       .order('name')
 
     if (error) {
@@ -31,7 +31,7 @@ export function useLabels(userId: string | undefined) {
     const { data, error } = await supabase
       .from('labels')
       .insert({ name, color })
-      .select()
+      .select('id, name, color')
       .single()
 
     if (error) throw error

@@ -36,7 +36,7 @@ export function useTasks(userId: string | undefined) {
       setError(null)
       const { data, error: fetchError } = await supabase
         .from('tasks')
-        .select('*, task_labels(label_id, labels(*))')
+        .select('*, task_labels(label_id, labels(id, name, color))')
         .order('position', { ascending: true })
         .order('created_at', { ascending: false })
 
@@ -87,7 +87,7 @@ export function useTasks(userId: string | undefined) {
         due_date: data.due_date || null,
         position: maxPosition + 1,
       })
-      .select('*, task_labels(label_id, labels(*))')
+      .select()
       .single()
 
     if (createError) {
@@ -95,7 +95,7 @@ export function useTasks(userId: string | undefined) {
       throw new Error('Failed to create task')
     }
 
-    setTasks(prev => [...prev, newTask])
+    setTasks(prev => [...prev, { ...newTask, task_labels: [] }])
     return newTask
   }, [userId])
 
@@ -158,11 +158,12 @@ export function useTasks(userId: string | undefined) {
             .map((t, i) => ({ id: t.id, position: i }))
             .filter((u, i) => columnTasks[i]?.position !== u.position)
 
-          await Promise.all(
-            updates.map(u =>
-              supabase.from('tasks').update({ position: u.position }).eq('id', u.id)
-            )
-          )
+          if (updates.length > 0) {
+            const { error: reorderError } = await supabase
+              .from('tasks')
+              .upsert(updates, { onConflict: 'id' })
+            if (reorderError) throw reorderError
+          }
         }
       }
     )

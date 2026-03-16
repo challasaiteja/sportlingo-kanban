@@ -5,7 +5,11 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import MuiButton from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
+import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
 import CircularProgress from '@mui/material/CircularProgress'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import { Task, TaskPriority, TaskStatus, Label } from '@/types'
@@ -51,6 +55,7 @@ export function TaskForm({
   const [status, setStatus] = useState<TaskStatus>(initialData?.status || defaultStatus)
   const [loading, setLoading] = useState(false)
   const [titleError, setTitleError] = useState('')
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   const priorityOptions = Object.entries(PRIORITY_CONFIG).map(([value, config]) => ({
     value,
@@ -148,7 +153,7 @@ export function TaskForm({
             variant="text"
             size="small"
             startIcon={<DeleteOutlineIcon />}
-            onClick={onDelete}
+            onClick={() => setShowDeleteConfirm(true)}
             sx={{ mr: 'auto' }}
           >
             Delete task
@@ -164,6 +169,39 @@ export function TaskForm({
           {submitLabel}
         </MuiButton>
       </DialogActions>
+      {/* Delete confirmation dialog */}
+      <Dialog
+        open={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        slotProps={{ paper: { sx: { borderRadius: 3, maxWidth: 360 } } }}
+      >
+        <DialogTitle sx={{ fontWeight: 600, fontSize: '1rem', pb: 0.5 }}>
+          Delete task?
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ fontSize: '0.85rem' }}>
+            This task will be permanently deleted and cannot be recovered.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <MuiButton
+            onClick={() => setShowDeleteConfirm(false)}
+            size="small"
+            sx={{ textTransform: 'none' }}
+          >
+            Cancel
+          </MuiButton>
+          <MuiButton
+            onClick={() => { setShowDeleteConfirm(false); onDelete?.() }}
+            color="error"
+            variant="contained"
+            size="small"
+            sx={{ textTransform: 'none' }}
+          >
+            Delete
+          </MuiButton>
+        </DialogActions>
+      </Dialog>
     </form>
   )
 }
