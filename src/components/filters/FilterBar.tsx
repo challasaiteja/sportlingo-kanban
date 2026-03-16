@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import TextField from '@mui/material/TextField'
 import MuiButton from '@mui/material/Button'
-import Chip from '@mui/material/Chip'
 import Popover from '@mui/material/Popover'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
@@ -52,14 +51,14 @@ export function FilterBar({
     (priorityFilter !== 'all' ? 1 : 0) + labelFilter.length
 
   return (
-    <div className="px-6 pb-4 flex items-center gap-3">
+    <div className="flex items-center gap-3">
       {/* Search */}
       <TextField
         placeholder="Search tasks..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         size="small"
-        sx={{ width: 240 }}
+        sx={{ width: 200, '& .MuiInputBase-root': { height: 34 } }}
         slotProps={{
           input: {
             startAdornment: (
@@ -92,16 +91,6 @@ export function FilterBar({
         </MuiButton>
       </Badge>
 
-      {/* Clear Filters */}
-      {hasActiveFilters && (
-        <Chip
-          label="Clear filters"
-          size="small"
-          onDelete={clearFilters}
-          sx={{ fontSize: '0.75rem' }}
-        />
-      )}
-
       {/* Filter Popover */}
       <Popover
         open={filterOpen}
@@ -111,7 +100,22 @@ export function FilterBar({
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         slotProps={{ paper: { sx: { width: 240, mt: 1, borderRadius: 2 } } }}
       >
-        <div className="p-3">
+        {/* Header with title + clear */}
+        <div className="flex items-center justify-between p-3 pb-1">
+          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+            Filters
+          </Typography>
+          {hasActiveFilters && (
+            <MuiButton
+              size="small"
+              onClick={() => { clearFilters(); setAnchorEl(null) }}
+              sx={{ fontSize: '0.75rem', textTransform: 'none', minWidth: 0, p: 0 }}
+            >
+              Clear
+            </MuiButton>
+          )}
+        </div>
+        <div className="px-3 pt-1">
           <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
             Priority
           </Typography>

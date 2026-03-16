@@ -212,13 +212,13 @@ export function Board({ userId }: BoardProps) {
   return (
     <>
       {/* Stats + Filter bar */}
-      <div className="flex items-center justify-between px-6 pb-2">
+      <div className="flex items-center justify-between px-6 pb-4 flex-wrap gap-3">
         <BoardStats tasks={tasks} />
+        <FilterBar
+          labels={labels}
+          {...filters}
+        />
       </div>
-      <FilterBar
-        labels={labels}
-        {...filters}
-      />
 
       <DndContext
         sensors={sensors}
