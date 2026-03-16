@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Task, TaskStatus, TaskPriority, Label } from '@/types'
 import { Modal } from '@/components/ui/Modal'
 import { TaskForm } from './TaskForm'
@@ -37,19 +37,19 @@ export function TaskModal({
   const [selectedLabelIds, setSelectedLabelIds] = useState<string[]>(
     task?.task_labels?.map(tl => tl.label_id) || []
   )
+  const initialLabelIds = useRef<string[]>(
+    task?.task_labels?.map(tl => tl.label_id) || []
+  )
 
   const isEdit = !!task
 
-  const handleLabelToggle = async (labelId: string) => {
-    const isSelected = selectedLabelIds.includes(labelId)
-    if (isSelected) {
-      setSelectedLabelIds(prev => prev.filter(id => id !== labelId))
-    } else {
-      setSelectedLabelIds(prev => [...prev, labelId])
-    }
-    if (task) {
-      await onLabelToggle(task.id, labelId, !isSelected)
-    }
+  // Only toggle locally — don't call Supabase yet
+  const handleLabelToggle = (labelId: string) => {
+    setSelectedLabelIds(prev =>
+      prev.includes(labelId)
+        ? prev.filter(id => id !== labelId)
+        : [...prev, labelId]
+    )
   }
 
   const handleSubmit = async (data: {
@@ -60,7 +60,18 @@ export function TaskModal({
     status: TaskStatus
   }) => {
     await onSubmit(data)
-    // If creating a new task, handle labels after creation
+
+    // Now persist label changes by diffing against initial state
+    if (task) {
+      const added = selectedLabelIds.filter(id => !initialLabelIds.current.includes(id))
+      const removed = initialLabelIds.current.filter(id => !selectedLabelIds.includes(id))
+
+      await Promise.all([
+        ...added.map(id => onLabelToggle(task.id, id, true)),
+        ...removed.map(id => onLabelToggle(task.id, id, false)),
+      ])
+    }
+
     onClose()
   }
 

@@ -42,7 +42,6 @@ export function TaskCard({ task, onClick, columnColor = '#6366f1', isDragOverlay
 
   const labels = task.task_labels?.map(tl => tl.labels).filter(Boolean) || []
   const isDone = task.status === 'done'
-  const hasBottom = task.priority !== 'none' || task.due_date
 
   return (
     <Card
@@ -97,27 +96,25 @@ export function TaskCard({ task, onClick, columnColor = '#6366f1', isDragOverlay
             )}
 
             {/* Bottom row: priority + due date + avatar */}
-            {(hasBottom || true) && (
-              <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: 0.75 }}>
-                <Box>
-                  <PriorityBadge priority={task.priority} />
-                </Box>
-                <Stack direction="row" alignItems="center" spacing={1}>
-                  <DueDateBadge dueDate={task.due_date} />
-                  <Avatar
-                    sx={{
-                      width: 20,
-                      height: 20,
-                      fontSize: '0.6rem',
-                      bgcolor: '#e2e8f0',
-                      color: '#64748b',
-                    }}
-                  >
-                    G
-                  </Avatar>
-                </Stack>
+            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: 0.75 }}>
+              <Box>
+                <PriorityBadge priority={task.priority} />
+              </Box>
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <DueDateBadge dueDate={task.due_date} />
+                <Avatar
+                  sx={{
+                    width: 20,
+                    height: 20,
+                    fontSize: '0.6rem',
+                    bgcolor: '#e2e8f0',
+                    color: '#64748b',
+                  }}
+                >
+                  G
+                </Avatar>
               </Stack>
-            )}
+            </Stack>
           </Box>
         </Stack>
       </CardContent>

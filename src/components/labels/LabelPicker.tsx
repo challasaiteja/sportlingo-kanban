@@ -32,8 +32,8 @@ export function LabelPicker({ labels, selectedIds, onToggle, onCreateLabel }: La
       onToggle(label.id)
       setNewName('')
       setShowCreate(false)
-    } catch {
-      // Label might already exist
+    } catch (err) {
+      console.error('Failed to create label:', err)
     } finally {
       setCreating(false)
     }
