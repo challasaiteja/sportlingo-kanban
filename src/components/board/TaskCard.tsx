@@ -63,59 +63,63 @@ export function TaskCard({ task, onClick, columnColor = '#6366f1', isDragOverlay
       }}
     >
       <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
-        {/* Title row with checkbox */}
-        <Stack direction="row" spacing={1} alignItems="flex-start">
-          <Box sx={{ pt: 0.2, flexShrink: 0 }}>
+        {/* Row 1: Checkbox + Title + Labels */}
+        <Stack direction="row" spacing={0.75} alignItems="center">
+          <Box sx={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
             {isDone ? (
               <CheckCircleIcon sx={{ fontSize: 16, color: '#10b981' }} />
             ) : (
               <RadioButtonUncheckedIcon sx={{ fontSize: 16, color: '#cbd5e1' }} />
             )}
           </Box>
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography
-              variant="body2"
+          <Typography
+            variant="body2"
+            noWrap
+            sx={{
+              flex: 1,
+              minWidth: 0,
+              fontWeight: 500,
+              fontSize: '0.82rem',
+              lineHeight: 1.4,
+              textDecoration: isDone ? 'line-through' : 'none',
+              color: isDone ? 'text.secondary' : 'text.primary',
+            }}
+          >
+            {task.title}
+          </Typography>
+          {labels.length > 0 && (
+            <Stack direction="row" spacing={0.5} sx={{ flexShrink: 0 }}>
+              {labels.slice(0, 2).map(label => (
+                <LabelBadge key={label.id} name={label.name} color={label.color} />
+              ))}
+              {labels.length > 2 && (
+                <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.65rem', lineHeight: '20px' }}>
+                  +{labels.length - 2}
+                </Typography>
+              )}
+            </Stack>
+          )}
+        </Stack>
+
+        {/* Row 2: Priority + Due date + Avatar — always rendered for consistent height */}
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: 1.25, minHeight: 22, pl: 2.75 }}>
+          <Box>
+            <PriorityBadge priority={task.priority} />
+          </Box>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <DueDateBadge dueDate={task.due_date} />
+            <Avatar
               sx={{
-                fontWeight: 500,
-                fontSize: '0.82rem',
-                lineHeight: 1.4,
-                textDecoration: isDone ? 'line-through' : 'none',
-                color: isDone ? 'text.secondary' : 'text.primary',
+                width: 20,
+                height: 20,
+                fontSize: '0.6rem',
+                bgcolor: '#e2e8f0',
+                color: '#64748b',
               }}
             >
-              {task.title}
-            </Typography>
-
-            {/* Labels */}
-            {labels.length > 0 && (
-              <Stack direction="row" spacing={0.5} sx={{ mt: 0.75, flexWrap: 'wrap', gap: 0.5 }}>
-                {labels.map(label => (
-                  <LabelBadge key={label.id} name={label.name} color={label.color} />
-                ))}
-              </Stack>
-            )}
-
-            {/* Bottom row: priority + due date + avatar */}
-            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: 0.75 }}>
-              <Box>
-                <PriorityBadge priority={task.priority} />
-              </Box>
-              <Stack direction="row" alignItems="center" spacing={1}>
-                <DueDateBadge dueDate={task.due_date} />
-                <Avatar
-                  sx={{
-                    width: 20,
-                    height: 20,
-                    fontSize: '0.6rem',
-                    bgcolor: '#e2e8f0',
-                    color: '#64748b',
-                  }}
-                >
-                  G
-                </Avatar>
-              </Stack>
-            </Stack>
-          </Box>
+              G
+            </Avatar>
+          </Stack>
         </Stack>
       </CardContent>
     </Card>
