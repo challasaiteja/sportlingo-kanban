@@ -60,12 +60,13 @@ export function Column({ column, tasks, onTaskClick, onAddTask }: ColumnProps) {
       {/* Task List */}
       <div
         ref={setNodeRef}
-        className="flex-1 rounded-xl p-2 min-h-[140px]"
         style={{
           backgroundColor: isOver ? 'rgba(99, 102, 241, 0.04)' : '#f4f5f7',
           outline: isOver ? '2px solid rgba(99, 102, 241, 0.2)' : 'none',
           outlineOffset: '-2px',
-          borderRadius: 12,
+          borderRadius: 10,
+          padding: 6,
+          minHeight: tasks.length === 0 ? 80 : undefined,
           transition: 'background-color 0.2s, outline 0.2s',
         }}
       >
@@ -82,8 +83,8 @@ export function Column({ column, tasks, onTaskClick, onAddTask }: ColumnProps) {
 
         {/* Empty State */}
         {tasks.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
-            <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.8rem', mb: 1 }}>
+          <div className="flex items-center justify-center py-4 px-3">
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
               {column.emptyMessage}
             </Typography>
           </div>

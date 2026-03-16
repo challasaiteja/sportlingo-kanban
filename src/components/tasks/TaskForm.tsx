@@ -1,11 +1,13 @@
 'use client'
 
 import { useState } from 'react'
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import MuiButton from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import DialogActions from '@mui/material/DialogActions'
 import CircularProgress from '@mui/material/CircularProgress'
-import DeleteIcon from '@mui/icons-material/Delete'
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import { Task, TaskPriority, TaskStatus, Label } from '@/types'
 import { PRIORITY_CONFIG } from '@/lib/constants'
 import { Input } from '@/components/ui/Input'
@@ -84,66 +86,72 @@ export function TaskForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 pt-1">
-      <Input
-        label="Title"
-        placeholder="What needs to be done?"
-        value={title}
-        onChange={(e) => { setTitle(e.target.value); setTitleError('') }}
-        error={titleError}
-        autoFocus
-      />
-
-      <Textarea
-        label="Description"
-        placeholder="Add more details..."
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-
-      <div className="grid grid-cols-2 gap-3">
-        <Select
-          label="Priority"
-          value={priority}
-          onChange={(e) => setPriority(e.target.value as TaskPriority)}
-          options={priorityOptions}
+    <form onSubmit={handleSubmit}>
+      <Stack spacing={2.5} sx={{ pt: 1 }}>
+        <Input
+          label="Title"
+          placeholder="What needs to be done?"
+          value={title}
+          onChange={(e) => { setTitle(e.target.value); setTitleError('') }}
+          error={titleError}
+          autoFocus
         />
-        <Select
-          label="Status"
-          value={status}
-          onChange={(e) => setStatus(e.target.value as TaskStatus)}
-          options={statusOptions}
+
+        <Textarea
+          label="Description"
+          placeholder="Add more details..."
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
         />
-      </div>
 
-      <Input
-        label="Due Date"
-        type="date"
-        value={dueDate}
-        onChange={(e) => setDueDate(e.target.value)}
-        slotProps={{ inputLabel: { shrink: true } }}
-      />
+        <Stack direction="row" spacing={2}>
+          <Box sx={{ flex: 1 }}>
+            <Select
+              label="Priority"
+              value={priority}
+              onChange={(e) => setPriority(e.target.value as TaskPriority)}
+              options={priorityOptions}
+            />
+          </Box>
+          <Box sx={{ flex: 1 }}>
+            <Select
+              label="Status"
+              value={status}
+              onChange={(e) => setStatus(e.target.value as TaskStatus)}
+              options={statusOptions}
+            />
+          </Box>
+        </Stack>
 
-      <Divider sx={{ my: 1 }} />
+        <Input
+          label="Due Date"
+          type="date"
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
+          slotProps={{ inputLabel: { shrink: true } }}
+        />
 
-      <LabelPicker
-        labels={labels}
-        selectedIds={selectedLabelIds}
-        onToggle={onLabelToggle}
-        onCreateLabel={onCreateLabel}
-      />
+        <Divider />
 
-      <DialogActions sx={{ px: 0, pt: 2 }}>
+        <LabelPicker
+          labels={labels}
+          selectedIds={selectedLabelIds}
+          onToggle={onLabelToggle}
+          onCreateLabel={onCreateLabel}
+        />
+      </Stack>
+
+      <DialogActions sx={{ px: 0, pt: 3, pb: 0 }}>
         {onDelete && (
           <MuiButton
             color="error"
-            variant="outlined"
+            variant="text"
             size="small"
-            startIcon={<DeleteIcon />}
+            startIcon={<DeleteOutlineIcon />}
             onClick={onDelete}
             sx={{ mr: 'auto' }}
           >
-            Delete
+            Delete task
           </MuiButton>
         )}
         <MuiButton
@@ -151,6 +159,7 @@ export function TaskForm({
           variant="contained"
           disabled={loading}
           startIcon={loading ? <CircularProgress size={16} color="inherit" /> : undefined}
+          sx={{ px: 3, borderRadius: 2 }}
         >
           {submitLabel}
         </MuiButton>

@@ -6,6 +6,8 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Avatar from '@mui/material/Avatar'
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { Task } from '@/types'
@@ -40,6 +42,7 @@ export function TaskCard({ task, onClick, columnColor = '#6366f1', isDragOverlay
 
   const labels = task.task_labels?.map(tl => tl.labels).filter(Boolean) || []
   const isDone = task.status === 'done'
+  const hasBottom = task.priority !== 'none' || task.due_date
 
   return (
     <Card
@@ -60,56 +63,63 @@ export function TaskCard({ task, onClick, columnColor = '#6366f1', isDragOverlay
         mb: 1,
       }}
     >
-      <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+      <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
         {/* Title row with checkbox */}
-        <div className="flex items-start gap-2 mb-1.5">
-          {isDone ? (
-            <CheckCircleIcon sx={{ fontSize: 18, color: '#10b981', mt: 0.2, flexShrink: 0 }} />
-          ) : (
-            <RadioButtonUncheckedIcon sx={{ fontSize: 18, color: '#cbd5e1', mt: 0.2, flexShrink: 0 }} />
-          )}
-          <Typography
-            variant="body2"
-            sx={{
-              fontWeight: 600,
-              lineHeight: 1.4,
-              textDecoration: isDone ? 'line-through' : 'none',
-              color: isDone ? 'text.secondary' : 'text.primary',
-            }}
-          >
-            {task.title}
-          </Typography>
-        </div>
-
-        {/* Labels */}
-        {labels.length > 0 && (
-          <div className="flex flex-wrap gap-1 ml-6.5 mb-2">
-            {labels.map(label => (
-              <LabelBadge key={label.id} name={label.name} color={label.color} />
-            ))}
-          </div>
-        )}
-
-        {/* Bottom row: priority, avatar, due date */}
-        <div className="flex items-center justify-between ml-6.5">
-          <div className="flex items-center gap-1.5">
-            <PriorityBadge priority={task.priority} />
-          </div>
-          <div className="flex items-center gap-2">
-            <DueDateBadge dueDate={task.due_date} />
-            <Avatar
+        <Stack direction="row" spacing={1} alignItems="flex-start">
+          <Box sx={{ pt: 0.2, flexShrink: 0 }}>
+            {isDone ? (
+              <CheckCircleIcon sx={{ fontSize: 16, color: '#10b981' }} />
+            ) : (
+              <RadioButtonUncheckedIcon sx={{ fontSize: 16, color: '#cbd5e1' }} />
+            )}
+          </Box>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography
+              variant="body2"
               sx={{
-                width: 22,
-                height: 22,
-                fontSize: '0.65rem',
-                bgcolor: '#e2e8f0',
-                color: '#64748b',
+                fontWeight: 500,
+                fontSize: '0.82rem',
+                lineHeight: 1.4,
+                textDecoration: isDone ? 'line-through' : 'none',
+                color: isDone ? 'text.secondary' : 'text.primary',
               }}
             >
-              G
-            </Avatar>
-          </div>
-        </div>
+              {task.title}
+            </Typography>
+
+            {/* Labels */}
+            {labels.length > 0 && (
+              <Stack direction="row" spacing={0.5} sx={{ mt: 0.75, flexWrap: 'wrap', gap: 0.5 }}>
+                {labels.map(label => (
+                  <LabelBadge key={label.id} name={label.name} color={label.color} />
+                ))}
+              </Stack>
+            )}
+
+            {/* Bottom row: priority + due date + avatar */}
+            {(hasBottom || true) && (
+              <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mt: 0.75 }}>
+                <Box>
+                  <PriorityBadge priority={task.priority} />
+                </Box>
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <DueDateBadge dueDate={task.due_date} />
+                  <Avatar
+                    sx={{
+                      width: 20,
+                      height: 20,
+                      fontSize: '0.6rem',
+                      bgcolor: '#e2e8f0',
+                      color: '#64748b',
+                    }}
+                  >
+                    G
+                  </Avatar>
+                </Stack>
+              </Stack>
+            )}
+          </Box>
+        </Stack>
       </CardContent>
     </Card>
   )
