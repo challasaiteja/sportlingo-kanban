@@ -1,5 +1,7 @@
 'use client'
 
+import Chip from '@mui/material/Chip'
+import CircleIcon from '@mui/icons-material/Circle'
 import { TaskPriority } from '@/types'
 import { PRIORITY_CONFIG } from '@/lib/constants'
 
@@ -8,12 +10,18 @@ export function PriorityBadge({ priority }: { priority: TaskPriority }) {
   const config = PRIORITY_CONFIG[priority]
 
   return (
-    <span
-      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium"
-      style={{ backgroundColor: config.bgColor, color: config.color }}
-    >
-      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: config.color }} />
-      {config.label}
-    </span>
+    <Chip
+      size="small"
+      icon={<CircleIcon sx={{ fontSize: 8, color: `${config.color} !important` }} />}
+      label={config.label}
+      sx={{
+        bgcolor: config.bgColor,
+        color: config.color,
+        fontWeight: 500,
+        fontSize: '0.7rem',
+        height: 22,
+        '& .MuiChip-icon': { ml: 0.5 },
+      }}
+    />
   )
 }

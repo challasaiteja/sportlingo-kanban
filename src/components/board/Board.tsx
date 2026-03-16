@@ -26,6 +26,7 @@ import { FilterBar } from '@/components/filters/FilterBar'
 import { BoardStats } from '@/components/stats/BoardStats'
 import { Spinner } from '@/components/ui/Spinner'
 import { ErrorBanner } from '@/components/ui/ErrorBanner'
+import Typography from '@mui/material/Typography'
 
 interface BoardProps {
   userId: string
@@ -194,7 +195,7 @@ export function Board({ userId }: BoardProps) {
       <div className="flex items-center justify-center h-[60vh]">
         <div className="flex flex-col items-center gap-3">
           <Spinner size="lg" />
-          <p className="text-sm text-muted">Loading your board...</p>
+          <Typography variant="body2" color="text.secondary">Loading your board...</Typography>
         </div>
       </div>
     )
@@ -210,7 +211,10 @@ export function Board({ userId }: BoardProps) {
 
   return (
     <>
-      <BoardStats tasks={tasks} />
+      {/* Stats + Filter bar */}
+      <div className="flex items-center justify-between px-6 pb-2">
+        <BoardStats tasks={tasks} />
+      </div>
       <FilterBar
         labels={labels}
         {...filters}
@@ -223,7 +227,7 @@ export function Board({ userId }: BoardProps) {
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-4 overflow-x-auto pb-4 px-4 snap-x snap-mandatory md:snap-none">
+        <div className="flex gap-6 overflow-x-auto pb-4 px-6 snap-x snap-mandatory md:snap-none">
           {COLUMNS.map(column => (
             <div key={column.id} className="snap-center shrink-0 md:shrink">
               <Column

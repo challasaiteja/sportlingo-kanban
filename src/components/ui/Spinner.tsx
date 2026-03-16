@@ -1,21 +1,9 @@
 'use client'
 
-import { cn } from '@/lib/utils'
+import CircularProgress from '@mui/material/CircularProgress'
 
-export function Spinner({ className, size = 'md' }: { className?: string; size?: 'sm' | 'md' | 'lg' }) {
-  const sizeClasses = {
-    sm: 'h-4 w-4 border-2',
-    md: 'h-8 w-8 border-2',
-    lg: 'h-12 w-12 border-3',
-  }
+const sizes = { sm: 16, md: 32, lg: 48 }
 
-  return (
-    <div
-      className={cn(
-        'animate-spin rounded-full border-accent/30 border-t-accent',
-        sizeClasses[size],
-        className
-      )}
-    />
-  )
+export function Spinner({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
+  return <CircularProgress size={sizes[size]} />
 }

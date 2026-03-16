@@ -1,12 +1,16 @@
 'use client'
 
 import { useState } from 'react'
+import MuiButton from '@mui/material/Button'
+import Divider from '@mui/material/Divider'
+import DialogActions from '@mui/material/DialogActions'
+import CircularProgress from '@mui/material/CircularProgress'
+import DeleteIcon from '@mui/icons-material/Delete'
 import { Task, TaskPriority, TaskStatus, Label } from '@/types'
 import { PRIORITY_CONFIG } from '@/lib/constants'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Select } from '@/components/ui/Select'
-import { Button } from '@/components/ui/Button'
 import { LabelPicker } from '@/components/labels/LabelPicker'
 
 interface TaskFormProps {
@@ -80,9 +84,8 @@ export function TaskForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 pt-1">
       <Input
-        id="title"
         label="Title"
         placeholder="What needs to be done?"
         value={title}
@@ -92,7 +95,6 @@ export function TaskForm({
       />
 
       <Textarea
-        id="description"
         label="Description"
         placeholder="Add more details..."
         value={description}
@@ -101,14 +103,12 @@ export function TaskForm({
 
       <div className="grid grid-cols-2 gap-3">
         <Select
-          id="priority"
           label="Priority"
           value={priority}
           onChange={(e) => setPriority(e.target.value as TaskPriority)}
           options={priorityOptions}
         />
         <Select
-          id="status"
           label="Status"
           value={status}
           onChange={(e) => setStatus(e.target.value as TaskStatus)}
@@ -117,12 +117,14 @@ export function TaskForm({
       </div>
 
       <Input
-        id="due_date"
         label="Due Date"
         type="date"
         value={dueDate}
         onChange={(e) => setDueDate(e.target.value)}
+        slotProps={{ inputLabel: { shrink: true } }}
       />
+
+      <Divider sx={{ my: 1 }} />
 
       <LabelPicker
         labels={labels}
@@ -131,18 +133,28 @@ export function TaskForm({
         onCreateLabel={onCreateLabel}
       />
 
-      <div className="flex items-center justify-between pt-2">
-        <div>
-          {onDelete && (
-            <Button type="button" variant="danger" size="sm" onClick={onDelete}>
-              Delete Task
-            </Button>
-          )}
-        </div>
-        <Button type="submit" loading={loading}>
+      <DialogActions sx={{ px: 0, pt: 2 }}>
+        {onDelete && (
+          <MuiButton
+            color="error"
+            variant="outlined"
+            size="small"
+            startIcon={<DeleteIcon />}
+            onClick={onDelete}
+            sx={{ mr: 'auto' }}
+          >
+            Delete
+          </MuiButton>
+        )}
+        <MuiButton
+          type="submit"
+          variant="contained"
+          disabled={loading}
+          startIcon={loading ? <CircularProgress size={16} color="inherit" /> : undefined}
+        >
           {submitLabel}
-        </Button>
-      </div>
+        </MuiButton>
+      </DialogActions>
     </form>
   )
 }

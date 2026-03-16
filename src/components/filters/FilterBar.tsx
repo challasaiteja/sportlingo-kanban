@@ -1,8 +1,25 @@
 'use client'
 
+import { useState } from 'react'
+import TextField from '@mui/material/TextField'
+import MuiButton from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
+import Popover from '@mui/material/Popover'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemButton from '@mui/material/ListItemButton'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
+import Checkbox from '@mui/material/Checkbox'
+import Typography from '@mui/material/Typography'
+import Divider from '@mui/material/Divider'
+import InputAdornment from '@mui/material/InputAdornment'
+import Badge from '@mui/material/Badge'
+import SearchIcon from '@mui/icons-material/Search'
+import FilterListIcon from '@mui/icons-material/FilterList'
+import CircleIcon from '@mui/icons-material/Circle'
 import { TaskPriority, Label } from '@/types'
 import { PRIORITY_CONFIG } from '@/lib/constants'
-import { cn } from '@/lib/utils'
 
 interface FilterBarProps {
   searchQuery: string
@@ -27,100 +44,148 @@ export function FilterBar({
   clearFilters,
   labels,
 }: FilterBarProps) {
-  const priorities: (TaskPriority | 'all')[] = ['all', 'urgent', 'high', 'medium', 'low', 'none']
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const filterOpen = Boolean(anchorEl)
+
+  const priorities: TaskPriority[] = ['urgent', 'high', 'medium', 'low', 'none']
+  const activeFilterCount =
+    (priorityFilter !== 'all' ? 1 : 0) + labelFilter.length
 
   return (
-    <div className="px-4 pb-4 space-y-3">
-      <div className="flex items-center gap-3 flex-wrap">
-        {/* Search */}
-        <div className="relative">
-          <svg
-            className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted"
-            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Search tasks..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-8 pr-3 py-1.5 text-sm rounded-lg border border-border bg-surface text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent w-56"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted hover:text-foreground cursor-pointer"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          )}
-        </div>
+    <div className="px-6 pb-4 flex items-center gap-3">
+      {/* Search */}
+      <TextField
+        placeholder="Search tasks..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        size="small"
+        sx={{ width: 240 }}
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+              </InputAdornment>
+            ),
+          },
+        }}
+      />
 
-        {/* Priority Filter */}
-        <div className="flex items-center gap-1">
+      {/* Filter Button */}
+      <Badge
+        badgeContent={activeFilterCount}
+        color="primary"
+        invisible={activeFilterCount === 0}
+      >
+        <MuiButton
+          variant="outlined"
+          size="small"
+          startIcon={<FilterListIcon />}
+          onClick={(e) => setAnchorEl(e.currentTarget)}
+          sx={{
+            color: 'text.secondary',
+            borderColor: 'divider',
+            '&:hover': { borderColor: 'text.secondary' },
+          }}
+        >
+          Filter
+        </MuiButton>
+      </Badge>
+
+      {/* Clear Filters */}
+      {hasActiveFilters && (
+        <Chip
+          label="Clear filters"
+          size="small"
+          onDelete={clearFilters}
+          sx={{ fontSize: '0.75rem' }}
+        />
+      )}
+
+      {/* Filter Popover */}
+      <Popover
+        open={filterOpen}
+        anchorEl={anchorEl}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+        slotProps={{ paper: { sx: { width: 240, mt: 1, borderRadius: 2 } } }}
+      >
+        <div className="p-3">
+          <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+            Priority
+          </Typography>
+        </div>
+        <List dense disablePadding>
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => setPriorityFilter('all')}
+              selected={priorityFilter === 'all'}
+              sx={{ py: 0.5 }}
+            >
+              <ListItemText primary="All priorities" primaryTypographyProps={{ fontSize: '0.8rem' }} />
+            </ListItemButton>
+          </ListItem>
           {priorities.map(p => {
-            const config = p === 'all' ? null : PRIORITY_CONFIG[p]
+            const config = PRIORITY_CONFIG[p]
             return (
-              <button
-                key={p}
-                onClick={() => setPriorityFilter(p)}
-                className={cn(
-                  'px-2 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer',
-                  priorityFilter === p
-                    ? 'bg-accent text-white'
-                    : 'text-muted hover:text-foreground hover:bg-column-bg'
-                )}
-              >
-                {p === 'all' ? 'All' : config?.label}
-              </button>
+              <ListItem key={p} disablePadding>
+                <ListItemButton
+                  onClick={() => setPriorityFilter(priorityFilter === p ? 'all' : p)}
+                  selected={priorityFilter === p}
+                  sx={{ py: 0.5 }}
+                >
+                  <ListItemIcon sx={{ minWidth: 28 }}>
+                    <CircleIcon sx={{ fontSize: 10, color: config.color }} />
+                  </ListItemIcon>
+                  <ListItemText primary={config.label} primaryTypographyProps={{ fontSize: '0.8rem' }} />
+                </ListItemButton>
+              </ListItem>
             )
           })}
-        </div>
+        </List>
 
-        {/* Label Filter */}
         {labels.length > 0 && (
-          <div className="flex items-center gap-1">
-            {labels.map(label => (
-              <button
-                key={label.id}
-                onClick={() => {
-                  if (labelFilter.includes(label.id)) {
-                    setLabelFilter(labelFilter.filter(id => id !== label.id))
-                  } else {
-                    setLabelFilter([...labelFilter, label.id])
-                  }
-                }}
-                className={cn(
-                  'px-2 py-1 text-xs font-medium rounded-md transition-all cursor-pointer border',
-                  labelFilter.includes(label.id)
-                    ? 'ring-1 ring-offset-1'
-                    : 'opacity-60 hover:opacity-100'
-                )}
-                style={{
-                  backgroundColor: `${label.color}15`,
-                  color: label.color,
-                  borderColor: `${label.color}30`,
-                }}
-              >
-                {label.name}
-              </button>
-            ))}
-          </div>
+          <>
+            <Divider sx={{ my: 1 }} />
+            <div className="px-3 pb-1">
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                Labels
+              </Typography>
+            </div>
+            <List dense disablePadding>
+              {labels.map(label => (
+                <ListItem key={label.id} disablePadding>
+                  <ListItemButton
+                    onClick={() => {
+                      if (labelFilter.includes(label.id)) {
+                        setLabelFilter(labelFilter.filter(id => id !== label.id))
+                      } else {
+                        setLabelFilter([...labelFilter, label.id])
+                      }
+                    }}
+                    sx={{ py: 0.5 }}
+                  >
+                    <ListItemIcon sx={{ minWidth: 36 }}>
+                      <Checkbox
+                        size="small"
+                        checked={labelFilter.includes(label.id)}
+                        tabIndex={-1}
+                        disableRipple
+                        sx={{ p: 0 }}
+                      />
+                    </ListItemIcon>
+                    <ListItemIcon sx={{ minWidth: 20 }}>
+                      <CircleIcon sx={{ fontSize: 10, color: label.color }} />
+                    </ListItemIcon>
+                    <ListItemText primary={label.name} primaryTypographyProps={{ fontSize: '0.8rem' }} />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          </>
         )}
-
-        {/* Clear Filters */}
-        {hasActiveFilters && (
-          <button
-            onClick={clearFilters}
-            className="text-xs text-accent hover:text-accent-hover font-medium cursor-pointer"
-          >
-            Clear filters
-          </button>
-        )}
-      </div>
+      </Popover>
     </div>
   )
 }

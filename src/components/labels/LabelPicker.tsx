@@ -1,9 +1,15 @@
 'use client'
 
 import { useState } from 'react'
+import Chip from '@mui/material/Chip'
+import TextField from '@mui/material/TextField'
+import MuiButton from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
+import CircleIcon from '@mui/icons-material/Circle'
+import AddIcon from '@mui/icons-material/Add'
 import { Label } from '@/types'
 import { LABEL_COLORS } from '@/lib/constants'
-import { cn } from '@/lib/utils'
 
 interface LabelPickerProps {
   labels: Label[]
@@ -35,86 +41,89 @@ export function LabelPicker({ labels, selectedIds, onToggle, onCreateLabel }: La
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-foreground">Labels</label>
+      <Typography variant="body2" fontWeight={500} sx={{ mb: 1 }}>
+        Labels
+      </Typography>
 
       {labels.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {labels.map(label => (
-            <button
+            <Chip
               key={label.id}
-              type="button"
+              label={label.name}
+              size="small"
+              icon={<CircleIcon sx={{ fontSize: 8, color: `${label.color} !important` }} />}
               onClick={() => onToggle(label.id)}
-              className={cn(
-                'inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all cursor-pointer border',
-                selectedIds.includes(label.id)
-                  ? 'ring-2 ring-offset-1'
-                  : 'opacity-60 hover:opacity-100'
-              )}
-              style={{
-                backgroundColor: `${label.color}18`,
+              variant={selectedIds.includes(label.id) ? 'filled' : 'outlined'}
+              sx={{
+                bgcolor: selectedIds.includes(label.id) ? `${label.color}20` : 'transparent',
                 color: label.color,
-                borderColor: `${label.color}30`,
-                ...(selectedIds.includes(label.id) ? { ringColor: label.color } : {}),
+                borderColor: `${label.color}40`,
+                fontWeight: 500,
+                fontSize: '0.75rem',
+                cursor: 'pointer',
+                '&:hover': { bgcolor: `${label.color}15` },
               }}
-            >
-              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: label.color }} />
-              {label.name}
-            </button>
+            />
           ))}
         </div>
       )}
 
       {showCreate ? (
-        <div className="flex items-end gap-2">
-          <div className="flex-1">
-            <input
-              type="text"
-              placeholder="Label name"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              className="w-full px-2.5 py-1.5 text-xs rounded-md border border-border bg-surface text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/50"
-              onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleCreate())}
-              autoFocus
-            />
-          </div>
-          <div className="flex gap-1">
+        <div className="flex items-end gap-2 mt-2">
+          <TextField
+            size="small"
+            placeholder="Label name"
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleCreate())}
+            autoFocus
+            sx={{ flex: 1 }}
+          />
+          <div className="flex gap-0.5">
             {LABEL_COLORS.slice(0, 6).map(color => (
-              <button
+              <IconButton
                 key={color}
-                type="button"
+                size="small"
                 onClick={() => setNewColor(color)}
-                className={cn(
-                  'w-5 h-5 rounded-full transition-transform cursor-pointer',
-                  newColor === color && 'ring-2 ring-offset-1 ring-gray-400 scale-110'
-                )}
-                style={{ backgroundColor: color }}
-              />
+                sx={{
+                  width: 24,
+                  height: 24,
+                  border: newColor === color ? '2px solid' : '1px solid transparent',
+                  borderColor: newColor === color ? 'text.secondary' : 'transparent',
+                }}
+              >
+                <CircleIcon sx={{ fontSize: 14, color }} />
+              </IconButton>
             ))}
           </div>
-          <button
-            type="button"
+          <MuiButton
+            size="small"
+            variant="contained"
             onClick={handleCreate}
             disabled={creating || !newName.trim()}
-            className="px-2.5 py-1.5 text-xs font-medium bg-accent text-white rounded-md hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
           >
             Add
-          </button>
-          <button
-            type="button"
+          </MuiButton>
+          <MuiButton
+            size="small"
+            variant="text"
+            color="inherit"
             onClick={() => setShowCreate(false)}
-            className="px-2.5 py-1.5 text-xs text-muted hover:text-foreground cursor-pointer"
           >
             Cancel
-          </button>
+          </MuiButton>
         </div>
       ) : (
-        <button
-          type="button"
+        <MuiButton
+          size="small"
+          variant="text"
+          startIcon={<AddIcon />}
           onClick={() => setShowCreate(true)}
-          className="text-xs text-accent hover:text-accent-hover font-medium cursor-pointer"
+          sx={{ fontSize: '0.8rem' }}
         >
-          + Create label
-        </button>
+          Create label
+        </MuiButton>
       )}
     </div>
   )

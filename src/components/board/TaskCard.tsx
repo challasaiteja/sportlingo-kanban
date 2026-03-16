@@ -2,19 +2,25 @@
 
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Typography from '@mui/material/Typography'
+import Avatar from '@mui/material/Avatar'
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { Task } from '@/types'
 import { PriorityBadge } from '@/components/tasks/PriorityBadge'
 import { DueDateBadge } from '@/components/tasks/DueDateBadge'
 import { LabelBadge } from '@/components/labels/LabelBadge'
-import { cn } from '@/lib/utils'
 
 interface TaskCardProps {
   task: Task
   onClick: () => void
+  columnColor?: string
   isDragOverlay?: boolean
 }
 
-export function TaskCard({ task, onClick, isDragOverlay }: TaskCardProps) {
+export function TaskCard({ task, onClick, columnColor = '#6366f1', isDragOverlay }: TaskCardProps) {
   const {
     attributes,
     listeners,
@@ -33,47 +39,79 @@ export function TaskCard({ task, onClick, isDragOverlay }: TaskCardProps) {
   }
 
   const labels = task.task_labels?.map(tl => tl.labels).filter(Boolean) || []
+  const isDone = task.status === 'done'
 
   return (
-    <div
+    <Card
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
       onClick={onClick}
-      className={cn(
-        'group bg-surface rounded-lg border border-border p-3 cursor-grab active:cursor-grabbing transition-shadow hover:shadow-md hover:border-border-hover',
-        isDragging && 'opacity-40 shadow-none',
-        isDragOverlay && 'drag-overlay',
-      )}
+      className={isDragOverlay ? 'drag-overlay' : ''}
+      sx={{
+        borderLeft: `3px solid ${columnColor}`,
+        cursor: isDragging ? 'grabbing' : 'grab',
+        opacity: isDragging ? 0.4 : 1,
+        transition: 'box-shadow 0.2s, opacity 0.2s',
+        '&:hover': {
+          boxShadow: isDragging ? 'none' : '0 2px 8px rgba(0,0,0,0.08)',
+        },
+        mb: 1,
+      }}
     >
-      {/* Labels */}
-      {labels.length > 0 && (
-        <div className="flex flex-wrap gap-1 mb-2">
-          {labels.map(label => (
-            <LabelBadge key={label.id} name={label.name} color={label.color} />
-          ))}
+      <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+        {/* Title row with checkbox */}
+        <div className="flex items-start gap-2 mb-1.5">
+          {isDone ? (
+            <CheckCircleIcon sx={{ fontSize: 18, color: '#10b981', mt: 0.2, flexShrink: 0 }} />
+          ) : (
+            <RadioButtonUncheckedIcon sx={{ fontSize: 18, color: '#cbd5e1', mt: 0.2, flexShrink: 0 }} />
+          )}
+          <Typography
+            variant="body2"
+            sx={{
+              fontWeight: 600,
+              lineHeight: 1.4,
+              textDecoration: isDone ? 'line-through' : 'none',
+              color: isDone ? 'text.secondary' : 'text.primary',
+            }}
+          >
+            {task.title}
+          </Typography>
         </div>
-      )}
 
-      {/* Title */}
-      <p className="text-sm font-medium text-foreground leading-snug mb-2">
-        {task.title}
-      </p>
+        {/* Labels */}
+        {labels.length > 0 && (
+          <div className="flex flex-wrap gap-1 ml-6.5 mb-2">
+            {labels.map(label => (
+              <LabelBadge key={label.id} name={label.name} color={label.color} />
+            ))}
+          </div>
+        )}
 
-      {/* Description preview */}
-      {task.description && (
-        <p className="text-xs text-muted line-clamp-2 mb-2">
-          {task.description}
-        </p>
-      )}
-
-      {/* Bottom row: priority + due date */}
-      <div className="flex items-center gap-1.5 flex-wrap">
-        <PriorityBadge priority={task.priority} />
-        <DueDateBadge dueDate={task.due_date} />
-      </div>
-    </div>
+        {/* Bottom row: priority, avatar, due date */}
+        <div className="flex items-center justify-between ml-6.5">
+          <div className="flex items-center gap-1.5">
+            <PriorityBadge priority={task.priority} />
+          </div>
+          <div className="flex items-center gap-2">
+            <DueDateBadge dueDate={task.due_date} />
+            <Avatar
+              sx={{
+                width: 22,
+                height: 22,
+                fontSize: '0.65rem',
+                bgcolor: '#e2e8f0',
+                color: '#64748b',
+              }}
+            >
+              G
+            </Avatar>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 
