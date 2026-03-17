@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import Card from '@mui/material/Card'
@@ -22,7 +23,7 @@ interface TaskCardProps {
   isDragOverlay?: boolean
 }
 
-export function TaskCard({ task, onClick, columnColor = '#6366f1', isDragOverlay }: TaskCardProps) {
+export const TaskCard = memo(function TaskCard({ task, onClick, columnColor = '#6366f1', isDragOverlay }: TaskCardProps) {
   const {
     attributes,
     listeners,
@@ -124,7 +125,7 @@ export function TaskCard({ task, onClick, columnColor = '#6366f1', isDragOverlay
       </CardContent>
     </Card>
   )
-}
+})
 
 export function TaskCardOverlay({ task }: { task: Task }) {
   return <TaskCard task={task} onClick={() => {}} isDragOverlay />

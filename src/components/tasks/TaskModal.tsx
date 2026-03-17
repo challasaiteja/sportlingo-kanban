@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Task, TaskStatus, TaskPriority, Label } from '@/types'
 import { Modal } from '@/components/ui/Modal'
 import { TaskForm } from './TaskForm'
@@ -40,6 +40,13 @@ export function TaskModal({
   const initialLabelIds = useRef<string[]>(
     task?.task_labels?.map(tl => tl.label_id) || []
   )
+
+  useEffect(() => {
+    const ids = task?.task_labels?.map(tl => tl.label_id) || []
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync derived state from task prop
+    setSelectedLabelIds(ids)
+    initialLabelIds.current = ids
+  }, [task])
 
   const isEdit = !!task
 

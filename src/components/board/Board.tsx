@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import {
   DndContext,
   DragOverlay,
@@ -14,7 +14,7 @@ import {
   closestCorners,
 } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
-import { Task, TaskStatus, TaskPriority, Label } from '@/types'
+import { Task, TaskStatus, TaskPriority } from '@/types'
 import { COLUMNS } from '@/lib/constants'
 import { useTasks } from '@/hooks/useTasks'
 import { useLabels, useTaskLabels } from '@/hooks/useLabels'
@@ -58,7 +58,7 @@ export function Board({ userId }: BoardProps) {
     useSensor(KeyboardSensor)
   )
 
-  const filteredTasks = filters.filterTasks(tasks)
+  const filteredTasks = useMemo(() => filters.filterTasks(tasks), [tasks, filters])
 
   const getColumnTasks = useCallback(
     (status: TaskStatus) =>
@@ -68,21 +68,21 @@ export function Board({ userId }: BoardProps) {
     [filteredTasks]
   )
 
-  const findColumnByTaskId = (taskId: string): TaskStatus | null => {
+  const findColumnByTaskId = useCallback((taskId: string): TaskStatus | null => {
     const task = tasks.find(t => t.id === taskId)
     return task?.status || null
-  }
+  }, [tasks])
 
   // Drag handlers
-  const handleDragStart = (event: DragStartEvent) => {
+  const handleDragStart = useCallback((event: DragStartEvent) => {
     const task = tasks.find(t => t.id === event.active.id)
     if (task) {
       setActiveTask(task)
       tasksSnapshot.current = [...tasks]
     }
-  }
+  }, [tasks])
 
-  const handleDragOver = (event: DragOverEvent) => {
+  const handleDragOver = useCallback((event: DragOverEvent) => {
     const { active, over } = event
     if (!over) return
 
@@ -107,9 +107,9 @@ export function Board({ userId }: BoardProps) {
         t.id === activeId ? { ...t, status: overStatus! } : t
       )
     )
-  }
+  }, [tasks, findColumnByTaskId, reorderTasks])
 
-  const handleDragEnd = async (event: DragEndEvent) => {
+  const handleDragEnd = useCallback(async (event: DragEndEvent) => {
     const { active, over } = event
     setActiveTask(null)
 
@@ -164,7 +164,7 @@ export function Board({ userId }: BoardProps) {
     })
     await moveTask(activeId, targetStatus, targetIndex, updatedTasks)
     if (targetStatus === 'done' && activeTask.status !== 'done') fireDoneConfetti()
-  }
+  }, [tasks, moveTask, reorderTasks])
 
   const handleLabelToggle = async (taskId: string, labelId: string, isAdding: boolean) => {
     if (isAdding) {

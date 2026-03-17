@@ -51,8 +51,30 @@ export function useTasks(userId: string | undefined) {
   }, [userId])
 
   useEffect(() => {
-    fetchTasks()
-  }, [fetchTasks])
+    let ignore = false
+    async function load() {
+      if (!userId) return
+      try {
+        setError(null)
+        const { data, error: fetchError } = await supabase
+          .from('tasks')
+          .select('*, task_labels(label_id, labels(id, name, color))')
+          .order('position', { ascending: true })
+          .order('created_at', { ascending: false })
+        if (ignore) return
+        if (fetchError) throw fetchError
+        setTasks(data || [])
+      } catch (err) {
+        if (ignore) return
+        console.error('Failed to fetch tasks:', err)
+        setError('Failed to load tasks.')
+      } finally {
+        if (!ignore) setLoading(false)
+      }
+    }
+    load()
+    return () => { ignore = true }
+  }, [userId])
 
   // Optimistic update helper: snapshot → apply → rollback on error
   const optimistic = useCallback(
