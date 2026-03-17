@@ -158,12 +158,11 @@ export function useTasks(userId: string | undefined) {
             .map((t, i) => ({ id: t.id, position: i }))
             .filter((u, i) => columnTasks[i]?.position !== u.position)
 
-          if (updates.length > 0) {
-            const { error: reorderError } = await supabase
-              .from('tasks')
-              .upsert(updates, { onConflict: 'id' })
-            if (reorderError) throw reorderError
-          }
+          await Promise.all(
+            updates.map(u =>
+              supabase.from('tasks').update({ position: u.position }).eq('id', u.id)
+            )
+          )
         }
       }
     )

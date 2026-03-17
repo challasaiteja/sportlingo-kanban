@@ -27,6 +27,16 @@ import { BoardStats } from '@/components/stats/BoardStats'
 import { Spinner } from '@/components/ui/Spinner'
 import { ErrorBanner } from '@/components/ui/ErrorBanner'
 import Typography from '@mui/material/Typography'
+import confetti from 'canvas-confetti'
+
+function fireDoneConfetti() {
+  confetti({
+    particleCount: 80,
+    spread: 70,
+    origin: { y: 0.3 },
+    colors: ['#10b981', '#34d399', '#6ee7b7', '#a7f3d0'],
+  })
+}
 
 interface BoardProps {
   userId: string
@@ -139,6 +149,7 @@ export function Board({ userId }: BoardProps) {
             return t
           })
           await moveTask(activeId, targetStatus, overIndex, updatedTasks)
+          if (targetStatus === 'done' && activeTask.status !== 'done') fireDoneConfetti()
           return
         } else if (activeIndex === -1) {
           targetIndex = overIndex
@@ -152,6 +163,7 @@ export function Board({ userId }: BoardProps) {
       return t
     })
     await moveTask(activeId, targetStatus, targetIndex, updatedTasks)
+    if (targetStatus === 'done' && activeTask.status !== 'done') fireDoneConfetti()
   }
 
   const handleLabelToggle = async (taskId: string, labelId: string, isAdding: boolean) => {
@@ -182,6 +194,7 @@ export function Board({ userId }: BoardProps) {
   }) => {
     if (!editingTask) return
     await updateTask(editingTask.id, data)
+    if (data.status === 'done' && editingTask.status !== 'done') fireDoneConfetti()
   }
 
   const handleDeleteTask = async () => {
