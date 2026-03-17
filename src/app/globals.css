@@ -23,6 +23,16 @@ body {
   background: #94a3b8;
 }
 
+/* Hide scrollbars on mobile */
+@media (max-width: 600px) {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  * {
+    scrollbar-width: none;
+  }
+}
+
 /* Drag overlay */
 .drag-overlay {
   box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);

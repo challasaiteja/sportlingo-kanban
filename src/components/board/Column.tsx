@@ -28,7 +28,7 @@ export function Column({ column, tasks, onTaskClick, onAddTask }: ColumnProps) {
   const taskIds = tasks.map(t => t.id)
 
   return (
-    <div className="flex flex-col min-w-[300px] max-w-[340px] w-full">
+    <div className="flex flex-col min-w-[260px] md:min-w-[300px] md:max-w-[340px] w-full">
       {/* Column Header */}
       <div className="flex items-center justify-between px-3 py-3">
         <div className="flex items-center gap-2">

@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Select } from '@/components/ui/Select'
 import { LabelPicker } from '@/components/labels/LabelPicker'
+import { useMobile } from '@/hooks/useMobile'
 
 interface TaskFormProps {
   initialData?: Task
@@ -48,6 +49,7 @@ export function TaskForm({
   onDelete,
   submitLabel,
 }: TaskFormProps) {
+  const { isMobile } = useMobile()
   const [title, setTitle] = useState(initialData?.title || '')
   const [description, setDescription] = useState(initialData?.description || '')
   const [priority, setPriority] = useState<TaskPriority>(initialData?.priority || 'none')
@@ -109,7 +111,7 @@ export function TaskForm({
           onChange={(e) => setDescription(e.target.value)}
         />
 
-        <Stack direction="row" spacing={2}>
+        <Stack direction={isMobile ? 'column' : 'row'} spacing={2}>
           <Box sx={{ flex: 1 }}>
             <Select
               label="Priority"

@@ -83,7 +83,7 @@ export default function Home() {
         </Toolbar>
       </AppBar>
 
-      <main className="max-w-[1440px] mx-auto pt-5">
+      <main className="max-w-[1440px] mx-auto pt-3 md:pt-5">
         <Board userId={user.id} />
       </main>
     </div>

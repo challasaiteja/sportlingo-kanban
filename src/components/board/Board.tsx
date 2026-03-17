@@ -225,7 +225,7 @@ export function Board({ userId }: BoardProps) {
   return (
     <>
       {/* Stats + Filter bar */}
-      <div className="flex items-center justify-between px-6 pb-4 flex-wrap gap-3">
+      <div className="flex items-center justify-between px-3 md:px-6 pb-4 flex-wrap gap-3">
         <BoardStats tasks={tasks} />
         <FilterBar
           labels={labels}
@@ -240,7 +240,7 @@ export function Board({ userId }: BoardProps) {
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-6 overflow-x-auto pb-4 px-6 snap-x snap-mandatory md:snap-none">
+        <div className="flex gap-6 overflow-x-auto pb-4 px-3 md:px-6 snap-x snap-mandatory md:snap-none">
           {COLUMNS.map(column => (
             <div key={column.id} className="snap-center shrink-0 md:shrink">
               <Column

@@ -19,6 +19,7 @@ import FilterListIcon from '@mui/icons-material/FilterList'
 import CircleIcon from '@mui/icons-material/Circle'
 import { TaskPriority, Label } from '@/types'
 import { PRIORITY_CONFIG } from '@/lib/constants'
+import { useMobile } from '@/hooks/useMobile'
 
 interface FilterBarProps {
   searchQuery: string
@@ -43,6 +44,7 @@ export function FilterBar({
   clearFilters,
   labels,
 }: FilterBarProps) {
+  const { isMobile } = useMobile()
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const filterOpen = Boolean(anchorEl)
 
@@ -51,14 +53,14 @@ export function FilterBar({
     (priorityFilter !== 'all' ? 1 : 0) + labelFilter.length
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-3 flex-wrap">
       {/* Search */}
       <TextField
         placeholder="Search tasks..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         size="small"
-        sx={{ width: 200, '& .MuiInputBase-root': { height: 34 } }}
+        sx={{ width: isMobile ? '100%' : 200, '& .MuiInputBase-root': { height: 34 } }}
         slotProps={{
           input: {
             startAdornment: (
